@@ -1,0 +1,30 @@
+﻿Classifier Models,Accuracies
+Decision Tree,0.74
+Random Forest,0.91
+SVM,0.8
+Bernoulli NB,0.74
+Multinomial NB,0.71
+Decision Tree,0.68
+Decision Tree,0.64
+Decision Tree,0.71
+Decision Tree,0.72
+Random Forest,0.92
+Random Forest,0.89
+Random Forest,0.86
+Random Forest,0.8
+SVM,0.76
+SVM,0.74
+SVM,0.81
+SVM,0.68
+SVM,0.7
+Bernoulli NB,0.75
+Bernoulli NB,0.78
+Bernoulli NB,0.81
+Bernoulli NB,0.68
+Bernoulli NB,0.72
+Bernoulli NB,0.68
+Multinomial NB,0.68
+Multinomial NB,0.65
+Multinomial NB,0.62
+Multinomial NB,0.75
+Multinomial NB,0.73

@@ -1,0 +1,80 @@
+################################### LDA CODE ##############################################
+
+@st.cache  # Trying to improve performance by reducing the rerun computations
+def format_topics_sentences(ldamodel, corpus):
+    sent_topics_df = []
+    for i, row_list in enumerate(ldamodel[corpus]):
+        row = row_list[0] if ldamodel.per_word_topics else row_list
+        row = sorted(row, key=lambda x: (x[1]), reverse=True)
+        for j, (topic_num, prop_topic) in enumerate(row):
+            if j == 0:
+                wp = ldamodel.show_topic(topic_num)
+                topic_keywords = ", ".join([word for word, prop in wp])
+                sent_topics_df.append(
+                    [i, int(topic_num), round(prop_topic, 4)*100, topic_keywords])
+            else:
+                break
+
+    return sent_topics_df
+
+
+    ################################# Topic Word Cloud Code #####################################
+    # st.sidebar.button('Hit Me')
+    st.markdown("## Topics and Topic Related Keywords ")
+    st.markdown(
+        """This Wordcloud representation shows the Topic Number and the Top Keywords that contstitute a Topic.
+        This further is used to cluster the resumes.      """)
+
+    cols = [color for name, color in mcolors.TABLEAU_COLORS.items()]
+
+    cloud = WordCloud(background_color='white',
+                      width=2500,
+                      height=1800,
+                      max_words=10,
+                      colormap='tab10',
+                      collocations=False,
+                      color_func=lambda *args, **kwargs: cols[i],
+                      prefer_horizontal=1.0)
+
+    topics = lda_model.show_topics(formatted=False)
+
+    fig, axes = plt.subplots(2, 3, figsize=(10, 10), sharex=True, sharey=True)
+
+    for i, ax in enumerate(axes.flatten()):
+        fig.add_subplot(ax)
+        topic_words = dict(topics[i][1])
+        cloud.generate_from_frequencies(topic_words, max_font_size=300)
+        plt.gca().imshow(cloud)
+        plt.gca().set_title('Topic ' + str(i), fontdict=dict(size=16))
+        plt.gca().axis('off')
+
+
+    plt.subplots_adjust(wspace=0, hspace=0)
+    plt.axis('off')
+    plt.margins(x=0, y=0)
+    plt.tight_layout()
+    st.pyplot(plt)
+
+    st.markdown("---")
+
+
+
+
+
+
+####################################################################################################
+
+    df_topic_sents_keywords = format_topics_sentences(
+        ldamodel=lda_model, corpus=corpus)
+    df_some = pd.DataFrame(df_topic_sents_keywords, columns=[
+                           'Document No', 'Dominant Topic', 'Topic % Contribution', 'Keywords'])
+    df_some['Names'] = Resumes['Name']
+
+    df = df_some
+
+    st.markdown("## Topic Modelling of Resumes ")
+    st.markdown(
+        "Using LDA to divide the topics into a number of usefull topics and creating a Cluster of matching topic resumes.  ")
+    fig3 = px.sunburst(df, path=['Dominant Topic', 'Names'], values='Topic % Contribution',
+                       color='Dominant Topic', color_continuous_scale='viridis', width=800, height=800, title="Topic Distribution Graph")
+    st.write(fig3)
